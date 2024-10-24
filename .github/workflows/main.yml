@@ -33,6 +33,16 @@ jobs:
       - name: Build iOS app
         run: flutter build ios --release --no-codesign
 
+      - name: Archive the app using xcodebuild
+        run: |
+          xcodebuild \
+            -workspace ios/Runner.xcworkspace \
+            -scheme Runner \
+            -sdk iphoneos \
+            -configuration Release \
+            -archivePath build/ios/archive/Runner.xcarchive \
+            clean archive
+          
       - name: Export .ipa
         run: |
           xcodebuild \
