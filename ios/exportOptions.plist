@@ -3,14 +3,18 @@
 <plist version="1.0">
   <dict>
     <key>method</key>
-    <string>development</string> <!-- Use "app-store" for production -->
+    <string>development</string> <!-- or "ad-hoc" -->
     <key>compileBitcode</key>
     <false/>
+    <key>destination</key>
+    <string>export</string>
     <key>signingStyle</key>
     <string>automatic</string>
+    <key>teamID</key>
+    <string>92Z42KJT56</string> <!-- Include your Team ID -->
     <key>stripSwiftSymbols</key>
     <true/>
     <key>thinning</key>
-    <string><none></string>
+    <string>&lt;none></string>
   </dict>
 </plist>
