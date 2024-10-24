@@ -13,13 +13,19 @@ jobs:
     runs-on: macos-latest
 
     steps:
+      - name: Install Rosetta 2
+        run: sudo softwareupdate --install-rosetta --agree-to-license
+
       - name: Checkout repository
         uses: actions/checkout@v3
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: 'stable'
+          flutter-version: '3.19.5'  # Specify the Flutter version
+
+      - name: Check Flutter version
+        run: flutter --version
 
       - name: Install Flutter dependencies
         run: flutter pub get
@@ -27,7 +33,7 @@ jobs:
       - name: Set up Xcode
         run: sudo xcode-select --switch /Applications/Xcode_14.2.app/Contents/Developer
         env:
-          XCODE_VERSION: '14.2' # You can change this to the Xcode version you're using
+          XCODE_VERSION: '14.2'
 
       - name: Create keychain
         run: |
