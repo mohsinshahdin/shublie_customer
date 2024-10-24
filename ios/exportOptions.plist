@@ -3,7 +3,7 @@
 <plist version="1.0">
   <dict>
     <key>method</key>
-    <string>development</string> <!-- or "ad-hoc" if distributing externally -->
+    <string>development</string> <!-- Use "app-store" for production -->
     <key>compileBitcode</key>
     <false/>
     <key>signingStyle</key>
