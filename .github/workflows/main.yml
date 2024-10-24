@@ -1,47 +1,59 @@
-name: Build iOS Flutter App
+name: Build iOS
 
 on:
   push:
     branches:
-      - main # Replace with your main branch
+      - main
   pull_request:
     branches:
-      - main # Replace with your main branch
+      - main
 
 jobs:
   build:
     runs-on: macos-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-    - name: Set up JDK
-      uses: actions/setup-java@v3
-      with:
-        java-version: '11'
-        distribution: 'temurin' # or 'zulu', 'adopt'
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 'stable'
 
-    - name: Install Flutter
-      uses: subosito/flutter-action@v2
-      with:
-        flutter-version: '3.3.10' # Set your required Flutter version
+      - name: Install Flutter dependencies
+        run: flutter pub get
 
-    - name: Install CocoaPods
-      run: sudo gem install cocoapods
+      - name: Set up Xcode
+        run: sudo xcode-select --switch /Applications/Xcode_14.2.app/Contents/Developer
+        env:
+          XCODE_VERSION: '14.2' # You can change this to the Xcode version you're using
 
-    - name: Install Flutter dependencies
-      run: flutter pub get
+      - name: Create keychain
+        run: |
+          security create-keychain -p "$KEYCHAIN_PASSWORD" build.keychain
+          security import <(echo "$CERTIFICATE_P12" | base64 --decode) -k build.keychain -P "$CERTIFICATE_PASSWORD" -T /usr/bin/codesign
+          security set-key-partition-list -S apple-tool:,apple: -s -k "$KEYCHAIN_PASSWORD" build.keychain
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" build.keychain
+        env:
+          CERTIFICATE_P12: ${{ secrets.CERTIFICATE_P12 }}
+          CERTIFICATE_PASSWORD: ${{ secrets.CERTIFICATE_PASSWORD }}
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
 
-    - name: Build iOS app
-      run: |
-        cd ios
-        pod install
-        cd ..
-        flutter build ios --release --no-codesign # Builds without code signing
+      - name: Set up provisioning profile
+        run: |
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          echo "$PROVISIONING_PROFILE" | base64 --decode > ~/Library/MobileDevice/Provisioning\ Profiles/App.mobileprovision
+        env:
+          PROVISIONING_PROFILE: ${{ secrets.PROVISIONING_PROFILE }}
 
-    - name: Upload iOS build artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: iOS-build
-        path: build/ios/iphoneos/*.ipa # Adjust the path if necessary
+      - name: Build iOS app
+        run: flutter build ios --release --no-codesign
+
+      - name: Export .ipa
+        run: |
+          xcodebuild \
+            -exportArchive \
+            -archivePath build/ios/archive/Runner.xcarchive \
+            -exportPath build/ios/ipa \
+            -exportOptionsPlist ios/exportOptions.plist
