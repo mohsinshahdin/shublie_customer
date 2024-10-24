@@ -41,7 +41,8 @@ jobs:
             -sdk iphoneos \
             -configuration Release \
             -archivePath build/ios/archive/Runner.xcarchive \
-            clean archive
+            clean archive \
+            CODE_SIGN_STYLE=Automatic
           
       - name: Export .ipa
         run: |
