@@ -22,7 +22,7 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.19.5'  # Specify the Flutter version
+          flutter-version: 'stable'  # or specify '3.10.6'
 
       - name: Check Flutter version
         run: flutter --version
@@ -30,10 +30,8 @@ jobs:
       - name: Install Flutter dependencies
         run: flutter pub get
 
-      - name: Set up Xcode
-        run: sudo xcode-select --switch /Applications/Xcode_14.2.app/Contents/Developer
-        env:
-          XCODE_VERSION: '14.2'
+      - name: Check Xcode Version
+        run: xcodebuild -version
 
       - name: Create keychain
         run: |
