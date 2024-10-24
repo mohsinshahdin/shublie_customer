@@ -1,0 +1,47 @@
+name: Build iOS Flutter App
+
+on:
+  push:
+    branches:
+      - main # Replace with your main branch
+  pull_request:
+    branches:
+      - main # Replace with your main branch
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up JDK
+      uses: actions/setup-java@v3
+      with:
+        java-version: '11'
+        distribution: 'temurin' # or 'zulu', 'adopt'
+
+    - name: Install Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.3.10' # Set your required Flutter version
+
+    - name: Install CocoaPods
+      run: sudo gem install cocoapods
+
+    - name: Install Flutter dependencies
+      run: flutter pub get
+
+    - name: Build iOS app
+      run: |
+        cd ios
+        pod install
+        cd ..
+        flutter build ios --release --no-codesign # Builds without code signing
+
+    - name: Upload iOS build artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: iOS-build
+        path: build/ios/iphoneos/*.ipa # Adjust the path if necessary
