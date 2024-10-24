@@ -22,7 +22,7 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.19.5'
+          flutter-version: '3.19.5' 
 
       - name: Check Flutter version
         run: flutter --version
@@ -30,21 +30,8 @@ jobs:
       - name: Install Flutter dependencies
         run: flutter pub get
 
-      - name: Check Xcode Version
-        run: xcodebuild -version
-
-      - name: Build iOS app (no codesign)
+      - name: Build iOS app
         run: flutter build ios --release --no-codesign
-
-      - name: Archive the iOS app
-        run: |
-          xcodebuild \
-            -workspace ios/Runner.xcworkspace \
-            -scheme Runner \
-            -sdk iphoneos \
-            -configuration Release \
-            -archivePath build/ios/archive/Runner.xcarchive \
-            archive
 
       - name: Export .ipa
         run: |
