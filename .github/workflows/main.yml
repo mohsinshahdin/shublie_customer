@@ -42,15 +42,9 @@ jobs:
             -configuration Release \
             -archivePath build/ios/archive/Runner.xcarchive \
             clean archive \
-            CODE_SIGN_STYLE=Automatic
-
-      - name: Check if archive exists
-        run: |
-          if [ ! -d "build/ios/archive/Runner.xcarchive" ]; then
-            echo "Archive not found! Exiting..."
-            exit 1
-          fi
-
+            CODE_SIGN_STYLE=Automatic \
+            DEVELOPMENT_TEAM=92Z42KJT56 # Add your Team ID here
+          
       - name: Export .ipa
         run: |
           xcodebuild \
